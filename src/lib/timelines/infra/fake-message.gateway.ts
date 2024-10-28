@@ -1,6 +1,7 @@
-import { MessageGateway } from "../model/message.gateway";
+import { MessageGateway } from '../model/message.gateway';
 
 export class FakeMessageGateway implements MessageGateway {
+  willFail = false;
   lastPostedMessage!: {
     id: string;
     author: string;
@@ -16,6 +17,11 @@ export class FakeMessageGateway implements MessageGateway {
     timelineId: string;
   }): Promise<void> {
     this.lastPostedMessage = message;
+    if (this.willFail) {
+      this.willFail = false;
+      return Promise.reject();
+    }
+    this.willFail = true;
     return Promise.resolve();
   }
 }

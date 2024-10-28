@@ -2,23 +2,27 @@ import {
   ActionCreatorWithPayload,
   createAction,
   createReducer,
-} from "@reduxjs/toolkit";
-import { RootState } from "./create-store";
-import { Timeline, timelinesAdapter } from "./timelines/model/timeline.entity";
-import { rootReducer } from "./root-reducer";
-import { Message, messagesAdapter } from "./timelines/model/message.entity";
+} from '@reduxjs/toolkit';
+import { RootState } from './create-store';
+import { rootReducer } from './root-reducer';
+import { Message, messagesAdapter } from './timelines/model/message.entity';
+import { Timeline, timelinesAdapter } from './timelines/model/timeline.entity';
 
-const initialState = rootReducer(undefined, createAction(""));
+const initialState = rootReducer(undefined, createAction(''));
 
-const withAuthUser = createAction<{ authUser: string }>("withAuthUser");
-const withTimeline = createAction<Timeline>("withTimeline");
+const withAuthUser = createAction<{ authUser: string }>('withAuthUser');
+const withTimeline = createAction<Timeline>('withTimeline');
 const withLoadingTimelineOf = createAction<{ user: string }>(
-  "withLoadingTimelineOf"
+  'withLoadingTimelineOf',
 );
 const withNotLoadingTimelineOf = createAction<{ user: string }>(
-  "withNotLoadingTimelineOf"
+  'withNotLoadingTimelineOf',
 );
-const withMessages = createAction<Message[]>("withMessages");
+const withMessages = createAction<Message[]>('withMessages');
+const withMessageNotPosted = createAction<{ messageId: string; error: string }>(
+  'withMessageNotPosted',
+);
+const withoutMessageNotPosted = createAction('withoutMessageNotPosted');
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -38,6 +42,13 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withMessages, (state, action) => {
       messagesAdapter.addMany(state.timelines.messages, action.payload);
+    })
+    .addCase(withMessageNotPosted, (state, action) => {
+      state.timelines.messages.messagesNotPosted[action.payload.messageId] =
+        action.payload.error;
+    })
+    .addCase(withoutMessageNotPosted, (state) => {
+      state.timelines.messages.messagesNotPosted = {};
     });
 });
 
@@ -51,9 +62,11 @@ export const stateBuilder = (baseState = initialState) => {
   return {
     withAuthUser: reduce(withAuthUser),
     withTimeline: reduce(withTimeline),
+    withMessageNotPosted: reduce(withMessageNotPosted),
     withLoadingTimelineOf: reduce(withLoadingTimelineOf),
     withNotLoadingTimelineOf: reduce(withNotLoadingTimelineOf),
     withMessages: reduce(withMessages),
+    withoutMessageNotPosted: reduce(withoutMessageNotPosted),
     build(): RootState {
       return baseState;
     },
