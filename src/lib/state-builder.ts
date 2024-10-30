@@ -1,3 +1,4 @@
+import { relationshipsAdapter } from '@/lib/users/model/relationship.entity';
 import {
   ActionCreatorWithPayload,
   createAction,
@@ -23,6 +24,25 @@ const withMessageNotPosted = createAction<{ messageId: string; error: string }>(
   'withMessageNotPosted',
 );
 const withoutMessageNotPosted = createAction('withoutMessageNotPosted');
+const withFollowers = createAction<{ of: string; followers: string[] }>(
+  'withFollowers',
+);
+const withFollowersNotLoading = createAction<{ of: string }>(
+  'withFollowersNotLoading',
+);
+const withFollowersLoading = createAction<{ of: string }>(
+  'withFollowersLoading',
+);
+
+const withFollowing = createAction<{ of: string; following: string[] }>(
+  'withFollowing',
+);
+const withFollowingNotLoading = createAction<{ of: string }>(
+  'withFollowingNotLoading',
+);
+const withFollowingLoading = createAction<{ of: string }>(
+  'withFollowingLoading',
+);
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -49,6 +69,36 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withoutMessageNotPosted, (state) => {
       state.timelines.messages.messagesNotPosted = {};
+    })
+    .addCase(withFollowers, (state, action) => {
+      relationshipsAdapter.addMany(
+        state.users.relationships,
+        action.payload.followers.map((follower) => ({
+          user: action.payload.of,
+          follows: follower,
+        })),
+      );
+    })
+    .addCase(withFollowersNotLoading, (state, action) => {
+      state.users.relationships.loadingFollowersOf[action.payload.of] = false;
+    })
+    .addCase(withFollowersLoading, (state, action) => {
+      state.users.relationships.loadingFollowersOf[action.payload.of] = true;
+    })
+    .addCase(withFollowing, (state, action) => {
+      relationshipsAdapter.addMany(
+        state.users.relationships,
+        action.payload.following.map((following) => ({
+          user: following,
+          follows: action.payload.of,
+        })),
+      );
+    })
+    .addCase(withFollowingNotLoading, (state, action) => {
+      state.users.relationships.loadingFollowingOf[action.payload.of] = false;
+    })
+    .addCase(withFollowingLoading, (state, action) => {
+      state.users.relationships.loadingFollowingOf[action.payload.of] = true;
     });
 });
 
@@ -67,6 +117,12 @@ export const stateBuilder = (baseState = initialState) => {
     withNotLoadingTimelineOf: reduce(withNotLoadingTimelineOf),
     withMessages: reduce(withMessages),
     withoutMessageNotPosted: reduce(withoutMessageNotPosted),
+    withFollowers: reduce(withFollowers),
+    withFollowersNotLoading: reduce(withFollowersNotLoading),
+    withFollowersLoading: reduce(withFollowersLoading),
+    withFollowing: reduce(withFollowing),
+    withFollowingNotLoading: reduce(withFollowingNotLoading),
+    withFollowingLoading: reduce(withFollowingLoading),
     build(): RootState {
       return baseState;
     },

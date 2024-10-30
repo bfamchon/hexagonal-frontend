@@ -7,6 +7,8 @@ import {
   isAsyncThunkAction,
 } from '@reduxjs/toolkit';
 
+import { FakeUserGateway } from '@/lib/users/infra/fake-user.gateway';
+import { UserGateway } from '@/lib/users/model/user.gateway';
 import { FakeAuthGateway } from './auth/infra/fake-auth.gateway';
 import { onAuthStateChangedListener } from './auth/listeners/on-auth-state-changed.listener';
 import { AuthGateway } from './auth/model/auth.gateway';
@@ -22,6 +24,7 @@ export type Dependencies = {
   authGateway: AuthGateway;
   timelineGateway: TimelineGateway;
   messageGateway: MessageGateway;
+  userGateway: UserGateway;
   dateProvider: DateProvider;
 };
 
@@ -65,6 +68,7 @@ export const createTestStore = (
     authGateway = new FakeAuthGateway(),
     timelineGateway = new FakeTimelineGateway(),
     messageGateway = new FakeMessageGateway(),
+    userGateway = new FakeUserGateway(),
     dateProvider = new RealDateProvider(),
   }: Partial<Dependencies> = {},
   preloadedState?: Partial<ReturnType<typeof rootReducer>>,
@@ -74,6 +78,7 @@ export const createTestStore = (
       authGateway,
       timelineGateway,
       messageGateway,
+      userGateway,
       dateProvider,
     },
     preloadedState,
