@@ -1,8 +1,8 @@
 import { FakeAuthGateway } from '@/lib/auth/infra/fake-auth.gateway';
-import { selectAuthUser } from '@/lib/auth/reducer';
 import { AppStore, createTestStore } from '@/lib/create-store';
 import { stateBuilder, stateBuilderProvider } from '@/lib/state-builder';
 import { MessageGateway } from '@/lib/timelines/model/message.gateway';
+import { getAuthUserTimeline } from '@/lib/timelines/usecases/get-auth-user-timeline.usecase';
 import { expect } from 'vitest';
 import { FakeMessageGateway } from '../infra/fake-message.gateway';
 import { FakeTimelineGateway } from '../infra/fake-timeline.gateway';
@@ -85,11 +85,17 @@ export const createTimelinesFixture = (
         },
         testStateBuilderProvider.getState(),
       );
-      await store.dispatch(getUserTimeline({ userId }));
+      return store.dispatch(getUserTimeline({ userId }));
     },
     async whenRetrievingAuthenticatedUserTimeline() {
-      const authUserId = selectAuthUser(testStateBuilderProvider.getState());
-      return this.whenRetrievingUserTimeline(authUserId);
+      store = createTestStore(
+        {
+          timelineGateway,
+          authGateway,
+        },
+        testStateBuilderProvider.getState(),
+      );
+      return store.dispatch(getAuthUserTimeline());
     },
     async whenUserPostsMessage(postMessageParams: PostMessageParams) {
       store = createTestStore(

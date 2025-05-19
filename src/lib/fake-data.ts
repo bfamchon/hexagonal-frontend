@@ -19,9 +19,15 @@ export const randomPickFromMap = <T>(theMap: Map<string, T>) =>
   ) as T;
 
 export const users = new Map(
-  new Array(500).fill(null).map(() => {
-    const username = randUserName();
-    return [username, username];
+  generateRandomIds(500).map((userId) => {
+    return [
+      userId,
+      {
+        id: userId,
+        username: randUserName(),
+        profilePicture: `https://picsum.photos/200/200?random=${userId}`,
+      },
+    ];
   }),
 );
 
@@ -47,16 +53,16 @@ export const likesByMessage = new Map(
     return [
       msg.id,
       generateRandomIds(randNumber({ min: 0, max: 150 })).map((likeId) => {
-        const userId = randomPickFromMap(usersCopy);
-        usersCopy.delete(userId);
+        const user = randomPickFromMap(usersCopy);
+        usersCopy.delete(user.id);
         userLikesByMessage.set(
           msg.id,
-          (userLikesByMessage.get(msg.id) ?? []).concat(userId),
+          (userLikesByMessage.get(msg.id) ?? []).concat(user.id),
         );
 
         return {
           id: likeId,
-          userId,
+          userId: user.id,
           messageId: msg.id,
         };
       }),
@@ -67,7 +73,7 @@ export const likesByMessage = new Map(
 export const messagesByTimeline = new Map<string, string[]>();
 
 export const timelinesByUser = new Map(
-  [...users.values()].map((userId) => {
+  [...users.values()].map((user) => {
     const timelineId = randomId();
     const messagesCopy = new Map(messages);
     const messageIds: string[] = (() =>
@@ -88,10 +94,10 @@ export const timelinesByUser = new Map(
       return mB.publishedAt.getTime() - mA.publishedAt.getTime();
     });
     return [
-      userId,
+      user.id,
       {
         id: timelineId,
-        user: userId,
+        user: user.id,
         messages: messageIds,
       },
     ];
@@ -101,15 +107,15 @@ export const timelinesByUser = new Map(
 export const followersByUser = new Map(
   [...users.values()].map((u) => {
     const usersCopy = new Map(users);
-    usersCopy.delete(u);
+    usersCopy.delete(u.id);
     return [
-      u,
+      u.id,
       new Array(randNumber({ min: 0, max: usersCopy.size }))
         .fill(null)
         .map(() => {
-          const userId = randomPickFromMap(usersCopy);
-          usersCopy.delete(userId);
-          return userId;
+          const user = randomPickFromMap(usersCopy);
+          usersCopy.delete(user.id);
+          return user.id;
         }),
     ];
   }),

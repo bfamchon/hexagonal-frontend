@@ -1,4 +1,4 @@
-import { followersByUser } from '@/lib/fake-data';
+import { followersByUser, followingByUser, users } from '@/lib/fake-data';
 import {
   GetUserFollowersResponse,
   GetUserFollowingResponse,
@@ -19,9 +19,21 @@ export class FakeDataUserGateway implements UserGateway {
           });
         }
         resolve({
-          followers: followers.map((userId) => ({
-            id: userId,
-          })),
+          followers: followers
+            .map((userId) => {
+              const user = users.get(userId);
+              if (!user) {
+                return null;
+              }
+              return {
+                id: userId,
+                username: user.username,
+                profilePicture: user.profilePicture,
+                followersCount: followersByUser.get(userId)?.length ?? 0,
+                followingCount: followingByUser.get(userId)?.length ?? 0,
+              };
+            })
+            .filter(Boolean),
         });
       }, 2000);
     });
@@ -29,6 +41,33 @@ export class FakeDataUserGateway implements UserGateway {
   getUserFollowing(params: {
     userId: string;
   }): Promise<GetUserFollowingResponse> {
-    throw new Error('Method not implemented.');
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const following = followingByUser.get(params.userId);
+
+        if (!following) {
+          return resolve({
+            following: [],
+          });
+        }
+        resolve({
+          following: following
+            .map((userId) => {
+              const user = users.get(userId);
+              if (!user) {
+                return null;
+              }
+              return {
+                id: userId,
+                username: user.username,
+                profilePicture: user.profilePicture,
+                followersCount: followersByUser.get(userId)?.length ?? 0,
+                followingCount: followingByUser.get(userId)?.length ?? 0,
+              };
+            })
+            .filter(Boolean),
+        });
+      }, 2000);
+    });
   }
 }

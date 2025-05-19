@@ -1,4 +1,5 @@
 import { relationshipsAdapter } from '@/lib/users/model/relationship.entity';
+import { User, userAdapter } from '@/lib/users/model/user.entity';
 import {
   ActionCreatorWithPayload,
   createAction,
@@ -43,6 +44,7 @@ const withFollowingNotLoading = createAction<{ of: string }>(
 const withFollowingLoading = createAction<{ of: string }>(
   'withFollowingLoading',
 );
+const withUsers = createAction<User[]>('withUsers');
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -99,6 +101,12 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withFollowingLoading, (state, action) => {
       state.users.relationships.loadingFollowingOf[action.payload.of] = true;
+    })
+    .addCase(withUsers, (state, action) => {
+      state.users.users = userAdapter.addMany(
+        state.users.users,
+        action.payload,
+      );
     });
 });
 
@@ -123,6 +131,7 @@ export const stateBuilder = (baseState = initialState) => {
     withFollowing: reduce(withFollowing),
     withFollowingNotLoading: reduce(withFollowingNotLoading),
     withFollowingLoading: reduce(withFollowingLoading),
+    withUsers: reduce(withUsers),
     build(): RootState {
       return baseState;
     },

@@ -21,6 +21,22 @@ describe('Profile following view model for Bob', () => {
   test('Example: following are loaded', () => {
     const state = stateBuilder()
       .withFollowing({ of: 'Baptiste', following: ['bob', 'alice'] })
+      .withUsers([
+        {
+          id: 'bob',
+          username: 'bob',
+          profilePicture: 'bob.png',
+          followersCount: 5,
+          followingCount: 10,
+        },
+        {
+          id: 'alice',
+          username: 'alice',
+          profilePicture: 'alice.png',
+          followersCount: 5,
+          followingCount: 10,
+        },
+      ])
       .build();
 
     const profileFollowingViewModel = createProfileFollowingViewModel({
@@ -32,13 +48,17 @@ describe('Profile following view model for Bob', () => {
         {
           id: 'bob',
           username: 'bob',
-          profilePicture: 'https://picsum.photos/200',
+          profilePicture: 'bob.png',
+          followersCount: 5,
+          followingCount: 10,
           link: '/u/bob',
         },
         {
           id: 'alice',
           username: 'alice',
-          profilePicture: 'https://picsum.photos/200',
+          profilePicture: 'alice.png',
+          followersCount: 5,
+          followingCount: 10,
           link: '/u/alice',
         },
       ],

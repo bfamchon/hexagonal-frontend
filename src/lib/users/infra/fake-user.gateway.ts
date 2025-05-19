@@ -1,3 +1,4 @@
+import { User } from '@/lib/users/model/user.entity';
 import {
   GetUserFollowersResponse,
   GetUserFollowingResponse,
@@ -22,31 +23,15 @@ export class FakeUserGateway implements UserGateway {
     }
     return Promise.resolve(response);
   }
-  givenFollowersResponse({
-    of,
-    followers,
-  }: {
-    of: string;
-    followers: string[];
-  }) {
+  givenFollowersResponse({ of, followers }: { of: string; followers: User[] }) {
     this.willReturnFollowersOf.set(of, {
-      followers: followers.map((id) => ({
-        id,
-      })),
+      followers,
     });
   }
 
-  givenFollowingResponse({
-    of,
-    following,
-  }: {
-    of: string;
-    following: string[];
-  }) {
+  givenFollowingResponse({ of, following }: { of: string; following: User[] }) {
     this.willReturnFollowingOf.set(of, {
-      following: following.map((id) => ({
-        id,
-      })),
+      following,
     });
   }
 }

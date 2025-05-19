@@ -3,6 +3,7 @@ import {
   selectAreFollowingLoading,
   selectFollowingOfUser,
 } from '@/lib/users/slices/relationships.slice';
+import { selectUser } from '@/lib/users/slices/users.slice';
 
 export enum ProfileFollowingViewModelType {
   LoadingFollowing = 'LOADING_FOLLOWING',
@@ -19,6 +20,8 @@ export type ProfileFollowingViewModel =
         id: string;
         username: string;
         profilePicture: string;
+        followersCount: number;
+        followingCount: number;
         link: string;
       }[];
     };
@@ -32,15 +35,25 @@ export const createProfileFollowingViewModel =
         type: ProfileFollowingViewModelType.LoadingFollowing,
       };
     }
-    const followers = selectFollowingOfUser(of, rootState);
+    const followings = selectFollowingOfUser(of, rootState);
 
     return {
       type: ProfileFollowingViewModelType.LoadedFollowing,
-      following: followers.map((follower) => ({
-        id: follower,
-        username: follower,
-        profilePicture: 'https://picsum.photos/200',
-        link: `/u/${follower}`,
-      })),
+      following: followings
+        .map((followingId) => {
+          const user = selectUser(followingId, rootState);
+          if (!user) {
+            return null;
+          }
+          return {
+            id: followingId,
+            username: user.username,
+            followersCount: user.followersCount,
+            followingCount: user.followingCount,
+            profilePicture: user.profilePicture,
+            link: `/u/${followingId}`,
+          };
+        })
+        .filter(Boolean),
     };
   };

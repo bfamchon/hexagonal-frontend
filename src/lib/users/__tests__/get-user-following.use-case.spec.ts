@@ -10,20 +10,33 @@ describe('Feature: Getting user following', () => {
     fixture = createUsersFixture();
   });
 
-  test('Example: retrieving the 10s Bob following', async () => {
+  test('Example: retrieving Bob s following', async () => {
+    fixture.givenExistingUsers([
+      {
+        id: 'alice-id',
+        username: 'Alice',
+        profilePicture: 'alice.png',
+        followersCount: 5,
+        followingCount: 10,
+      },
+    ]);
     fixture.givenFollowing({
       of: 'Bob',
       following: [
-        'f1-id',
-        'f2-id',
-        'f3-id',
-        'f4-id',
-        'f5-id',
-        'f6-id',
-        'f7-id',
-        'f8-id',
-        'f9-id',
-        'f10-id',
+        {
+          id: 'alice-id',
+          username: 'Aliceasdas',
+          profilePicture: 'aliceasdas.png',
+          followersCount: 10,
+          followingCount: 10,
+        },
+        {
+          id: 'charles-id',
+          username: 'Charles',
+          profilePicture: 'charles.png',
+          followersCount: 3,
+          followingCount: 5,
+        },
       ],
     });
 
@@ -35,16 +48,20 @@ describe('Feature: Getting user following', () => {
     fixture.thenFollowingShouldBe({
       of: 'Bob',
       following: [
-        'f1-id',
-        'f2-id',
-        'f3-id',
-        'f4-id',
-        'f5-id',
-        'f6-id',
-        'f7-id',
-        'f8-id',
-        'f9-id',
-        'f10-id',
+        {
+          id: 'alice-id',
+          username: 'Aliceasdas',
+          profilePicture: 'aliceasdas.png',
+          followersCount: 10,
+          followingCount: 10,
+        },
+        {
+          id: 'charles-id',
+          username: 'Charles',
+          profilePicture: 'charles.png',
+          followersCount: 3,
+          followingCount: 5,
+        },
       ],
     });
   });

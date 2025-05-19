@@ -1,10 +1,4 @@
-type User = {
-  id: string;
-  //   username: string;
-  //   profilePicture: string;
-  //   followersCount: number;
-  //   followingCount: number;
-};
+import { User } from '@/lib/users/model/user.entity';
 
 export type GetUserFollowersResponse = {
   followers: User[];

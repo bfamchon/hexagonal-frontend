@@ -12,8 +12,8 @@ import { FakeDataTimelineGateway } from './lib/timelines/infra/fake-data-timelin
 import { createRouter } from './router.tsx';
 
 const fakeAuthGateway = new FakeAuthGateway(500);
-fakeAuthGateway.willSucceedForGoogleAuthForUser = [...users.values()][0];
-fakeAuthGateway.willSucceedForGithubAuthForUser = [...users.values()][1];
+fakeAuthGateway.willSucceedForGoogleAuthForUser = [...users.values()][0].id;
+fakeAuthGateway.willSucceedForGithubAuthForUser = [...users.values()][1].id;
 const authGateway = new FakeStorageAuthGateway(fakeAuthGateway);
 const messageGateway = new FakeMessageGateway();
 const timelineGateway = new FakeDataTimelineGateway();

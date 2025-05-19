@@ -1,8 +1,8 @@
+import { messages as messagesMap, timelinesByUser } from '@/lib/fake-data';
 import {
   GetUserTimelineResponse,
   TimelineGateway,
-} from "../model/timeline.gateway";
-import { timelinesByUser, messages as messagesMap } from "@/lib/fake-data";
+} from '../model/timeline.gateway';
 
 export class FakeDataTimelineGateway implements TimelineGateway {
   getUserTimeline({
@@ -13,7 +13,7 @@ export class FakeDataTimelineGateway implements TimelineGateway {
     return new Promise((resolve, reject) => {
       const timeline = timelinesByUser.get(userId);
       if (!timeline) {
-        return reject("No timeline");
+        return reject('No timeline');
       }
       const messages = timeline.messages
         .map((msgId) => {
